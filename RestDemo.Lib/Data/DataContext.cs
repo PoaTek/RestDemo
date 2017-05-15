@@ -2,6 +2,7 @@
 using System.Data.Entity;
 
 using RestDemo.Lib.Entities;
+using System.Diagnostics;
 
 namespace RestDemo.Lib.Data
 {
@@ -17,6 +18,15 @@ namespace RestDemo.Lib.Data
         /// </summary>
         public DataContext() : base("MyContext")
         {
+            Database.Log = LogSql;
+        }
+
+        /// <summary>
+        /// Set all mappings for the database
+        /// </summary>
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            modelBuilder.Configurations.Add(new CityMap());
         }
 
         /// <summary>
@@ -25,11 +35,11 @@ namespace RestDemo.Lib.Data
         public DbSet<City> Cities { get; set; }
 
         /// <summary>
-        /// Set all mappings for the database
+        /// Logs all SQL calls
         /// </summary>
-        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        private void LogSql(string sql)
         {
-            modelBuilder.Configurations.Add(new CityMap());
+            Debug.WriteLine(sql);
         }
     }
 }

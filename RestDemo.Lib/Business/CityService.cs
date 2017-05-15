@@ -14,35 +14,39 @@ namespace RestDemo.Lib.Business
         /// <summary>
         /// List Cities by criteria
         /// </summary>
-        public City[] List(CityCriteria criteria)
+        /// <param name="name">The City name </param>
+        /// <param name="populationFrom">The lower population ranger</param>
+        /// <param name="populationTo">The upper population ranger</param>
+        /// <returns>A list of cities</returns>
+        public City[] List(string name, int? populationFrom, int? populationTo)
         {
-            // Instantiate database contect
-            var context = new DataContext();
+            // Instantiate database context
+            var db = new DataContext();
 
             // Build the query
-            IQueryable<City> query = context.Cities;
+            IQueryable<City> query = db.Cities;
 
-            if (criteria != null)
-            {
-                // Business validation
-                if (criteria.PopulationTo < criteria.PopulationFrom)
-                    throw new InvalidOperationException("Invalid population criteria!");
+            // Business validation
+            if (populationTo < populationFrom)
+                throw new InvalidOperationException("Invalid population criteria!");
 
-                // Apply name criteria
-                if (criteria.Name != null)
-                    query = query.Where(i => i.Name.StartsWith(criteria.Name));
+            // Apply name criteria (Translate to SQL: WHERE Name LIKE 'X%')
+            if (name != null)
+                query = query.Where(i => i.Name.StartsWith(name));
 
-                // Apply population range criteria
-                if (criteria.PopulationFrom != null)
-                    query = query.Where(i => i.Population >= criteria.PopulationFrom);
+            // Apply population range criteria (Translate to SQL: WHERE PopulationFrom >= X)
+            if (populationFrom != null)
+                query = query.Where(i => i.Population >= populationFrom);
 
-                // Apply population range criteria
-                if (criteria.PopulationTo != null)
-                    query = query.Where(i => i.Population <= criteria.PopulationTo);
-            }
+            // Apply population range criteria (Translate to SQL: WHERE PopulationFrom <= X)
+            if (populationTo != null)
+                query = query.Where(i => i.Population <= populationTo);
 
+            // Translate the query into SQL
             // Fetch data from the database
-            return query.ToArray();
+            City[] cities = query.ToArray();
+
+            return cities;
         }
     }
 }

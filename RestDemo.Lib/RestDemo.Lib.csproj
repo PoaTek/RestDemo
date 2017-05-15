@@ -55,7 +55,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Business\CityCriteria.cs" />
     <Compile Include="Business\CityService.cs" />
     <Compile Include="Data\CityMap.cs" />
     <Compile Include="Data\DataContext.cs" />
